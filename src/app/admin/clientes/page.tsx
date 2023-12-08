@@ -9,6 +9,7 @@ export default function Page() {
             name: "Dra. Maribel",
             items: 10,
             mount: 350,
+            mount_return: 0,
             mount_pending: 100
         },
         {
@@ -16,6 +17,7 @@ export default function Page() {
             name: "Ana Navas",
             items: 5,
             mount: 100,
+            mount_return: 0,
             mount_pending: 0
         },
         {
@@ -23,6 +25,7 @@ export default function Page() {
             name: "Joglis",
             items: 8,
             mount: 180,
+            mount_return: 0,
             mount_pending: 50
         }
     ]
@@ -33,6 +36,7 @@ export default function Page() {
         { name:'name', label:'Nombre' },
         { name:'items', label:'Productos Comprados' },
         { name:'mount', label:'Monto Pagado' },
+        { name:'mount_return', label:'Monto Reembolsado' },
         { name:'mount_pending', label:'Monto por Cobrar' }
     ]
 
