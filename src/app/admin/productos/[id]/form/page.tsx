@@ -1,5 +1,6 @@
 import Image from "next/image";
 import FormAttributes from "@/components/FormAttributes";
+import ClientSelect from "@/app/components/ui/ClientSelect";
 
 export default function Page(){
 
@@ -33,16 +34,7 @@ export default function Page(){
                     </label>
                 </div>
                 <div className="flex flex-col gap-2 border-r pr-2">
-                    <label className="p-2 flex flex-row justify-between gap-2 border border-slate-300 rounded-md">
-                        <span className="font-medium w-1/3">Cliente</span>
-                        <select className="bg-white w-2/3 text-right pr-5">
-                            <option>-</option>
-                            <option>Nuevo Cliente</option>
-                            <option>Maribel</option>
-                            <option>Ana</option>
-                            <option>Joglis</option>
-                        </select>
-                    </label>
+                    <ClientSelect />
                     <label className="p-2 flex flex-row justify-between gap-2 border border-slate-300 rounded-md">
                         <span className="font-medium w-1/3">Cantidad</span>
                         <input type="number" value={1} className="text-right w-2/3 outline-none border-none ring-0"/>
