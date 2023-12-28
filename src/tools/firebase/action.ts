@@ -3,7 +3,7 @@ import { getDoc, getDocs, updateDoc, addDoc, deleteDoc, doc, onSnapshot, collect
 import { db } from "./config"
 
 
-export const onSnap = (name:string, callback:(arg0:any)=>void, id:string|null) => {
+export const onSnap = (name:string, callback:(arg0:any)=>void, id:string|null|undefined) => {
     if( id ) {
         onSnapshot( doc(db, name, id) , doc => callback({
             ...doc.data(),
