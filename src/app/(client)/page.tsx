@@ -1,34 +1,18 @@
+"use client"
+import ProductModel from '@/tools/models/ProductModel'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 export default function Home() {
-  const products = [{
-      id: 1,
-      name:"Earthen Bottle",
-      price:'$48',
-      image:{
-        src: "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-01.jpg",
-        alt: "Tall slender porcelain bottle with natural clay textured body and cork stopper"
-      }
-    },{
-      id: 2,
-      name:"Nomad Tumbler",
-      price:'$35',
-      image:{
-        src: "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-02.jpg",
-        alt: "Tall slender porcelain bottle with natural clay textured body and cork stopper"
-      }
-    },{
-      id: 3,
-      name:"Focus Paper Refill",
-      price:'$89',
-      image:{
-        src: "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-04.jpg",
-        alt: "Tall slender porcelain bottle with natural clay textured body and cork stopper"
-      }
-    }
+  const [products, setProducts] = useState<Array<TypeProduct>>([])
 
-  ]
+  useEffect(()=>{
+    ProductModel.onSnap( (data:any) => {
+      console.log('data',data)
+      setProducts(data)
+    },null)
+  },[])
 
   return <div className="bg-slate-400 h-screen">
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">

@@ -1,39 +1,24 @@
+"use client"
 import Image from "next/image";
 import TableCustom from "@/components/TableCustom";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import ProductModel from "@/tools/models/ProductModel";
 
 
 export default function Page() {
-    const items = [
-        {
-          id:'PROD001',
-          image: "",
-          name: "Producto 1",
-          description: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quae ab vitae culpa, illum ut corrupti at, ad sit voluptate enim facilis unde? Corporis accusamus officiis rem tempora corrupti eaque quod?",
-          price: 100,
-          date: '23 Dec 2023'
-        },
-        {
-          id:'PROD002',
-          image: "",
-          name: "Producto 2",
-          description: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quae ab vitae culpa, illum ut corrupti at, ad sit voluptate enim facilis unde? Corporis accusamus officiis rem tempora corrupti eaque quod?",
-          price: 100,
-          date: '29 Dec 2023'
-        },
-        {
-          id:'PROD003',
-          image: "",
-          name: "Producto 3",
-          description: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quae ab vitae culpa, illum ut corrupti at, ad sit voluptate enim facilis unde? Corporis accusamus officiis rem tempora corrupti eaque quod?",
-          price: 100,
-          date: '30 Dec 2023'
-        }
-    ]
+    const [items, setItems] = useState([])
+
+    useEffect(()=>{
+      ProductModel.onSnap( (data:any) => {
+        console.log('data',data)
+        setItems(data)
+      },null)
+    },[])
 
     const headers = [
         { name:'id', label:'ID', render: (id:string) => <CheckBox /> },
-        { name:'image', label:'Thumbnail', render:(value:string) => <Image src="/prueba.jpg" width="64" height="64" alt="Item thumbnail" className="aspect-square rounded-md object-cover"/> },
+        { name:'image', label:'Thumbnail', render:(value:any) => <Image src={value.src ?? "/prueba.jpg"} width="64" height="64" alt={value.alt ?? "Item thumbnail"} className="aspect-square rounded-md object-cover"/> },
         { name:'name', label:'Name'},
         { name:'description', label:'Description', className:"w-[400px]" },
         { name:'price', label:'Price'},
