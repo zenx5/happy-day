@@ -1,6 +1,6 @@
-import { actionDelete, actionGet, actionGetAll, actionSave, actionSearch } from "../firebase/action";
+import { actionDelete, actionGet, actionGetAll, actionSave, actionSearch, onSnap } from "../firebase/action";
 
-export class BaseModel {
+export default class BaseModel {
     static  tableName = ""
 
     static async get( id:string|null=null ) {
@@ -22,5 +22,9 @@ export class BaseModel {
 
     static async search(key:string, value:string) {
         return await actionSearch(this.tableName, key, "==", value)
+    }
+
+    static async onSnap(callback:any, id:string|null|undefined) {
+        onSnap(this.tableName, callback, id )
     }
 }
