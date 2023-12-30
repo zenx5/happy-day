@@ -16,11 +16,11 @@ export default class BaseModel {
         return await actionSave(this.tableName, data)
     }
 
-    static async put(id:string, data:any ) {
+    static async put(id:string, data:any) {
         return await actionSave(this.tableName, data, id)
     }
 
-    static async search(key:string, value:string) {
+    static async search(key:string, value:any) {
         return await actionSearch(this.tableName, key, "==", value)
     }
 
