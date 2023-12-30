@@ -1,12 +1,29 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
-export default function FormAttributes(){
+export default function FormAttributes({
+    values,
+    onChange
+}:{
+    values:Array<TypeAttribute>|undefined,
+    onChange: Function
+}){
     const [name, setName] = useState("")
     const [value, setValue] = useState("")
     const [attributes, setAttributes] = useState<Array<any>>([])
 
+    useEffect(()=>{
+        if( values && values?.length>0 ) setAttributes(values)
+    }, [values])
+
     const handlerAdd = () => {
+        if( onChange ) onChange([
+            ...attributes,
+            {
+                name,
+                value
+            }
+        ])
         setAttributes( prev => ([...prev, {
             name,
             value
@@ -16,7 +33,8 @@ export default function FormAttributes(){
     }
 
     const handlerRemoveItem = (index:Number) => {
-        setAttributes( prev => prev.filter( (item, itemIndex) => index!==itemIndex ))
+        if( onChange ) onChange(attributes.filter( (item, itemIndex) => index!==itemIndex ))
+        setAttributes( prev => prev.filter( (item, itemIndex) => index!==itemIndex ) )
     }
 
 
@@ -31,7 +49,7 @@ export default function FormAttributes(){
             </span>
         </div>
         <div className="w-full flex flex-row gap-2 flex-wrap">
-            {attributes.map( (item, index)=> <span key={item} className="flex justify-between w-fit px-2 gap-2 shadow-md border rounded-full items-center py-1">
+            {attributes.map( (item, index)=> <span key={index} className="flex justify-between w-fit px-2 gap-2 shadow-md border rounded-full items-center py-1">
                 <span className="font-semibold">{item.name}</span>
                 <span className="">{item.value}</span>
                 <button onClick={()=>handlerRemoveItem(index)}>
