@@ -1,4 +1,4 @@
-import { getDoc, getDocs, updateDoc, addDoc, deleteDoc, doc, onSnapshot, collection, query, where } from "firebase/firestore"
+import { getDoc, getDocs, updateDoc, addDoc, deleteDoc, doc, onSnapshot, collection, query, where, deleteField } from "firebase/firestore"
 
 import { db } from "./config"
 
@@ -27,7 +27,12 @@ export const actionSave = async (
  ) => {
     try{
         if( id ) {
-            updateDoc( doc(db, name, id),  data )
+            const updateData:any = {}
+            for(const key of Object.keys( data ) ) {
+                if( data[key]===undefined ) updateData[key] = deleteField()
+                else updateData[key] = data[key]
+            }
+            updateDoc( doc(db, name, id),  updateData )
         } else {
             addDoc( collection(db, name), data )
         }
