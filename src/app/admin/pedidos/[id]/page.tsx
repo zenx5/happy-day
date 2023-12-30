@@ -1,56 +1,92 @@
-import Image from "next/image"
-import Link from "next/link"
+"use client"
+import ProductModel from "@/tools/models/ProductModel"
+import { useEffect, useState } from "react"
+import OrderModel from "@/tools/models/OrderModel"
+import ModalProductSelection from "./ModalProductSelection"
+import OrderDetails from "./OrderDetails"
+import ClientList from "./ClientList"
+import TableProduct from "./TableProduct"
+import Pagination from "@/components/Pagination"
+import { ORDER_STATUS } from "@/tools/constants"
 
-export default function Page() {
-    const products = [
-        {
-            id:1,
-            name: "Producto 1",
-            image: "/prueba.jpg",
-            description: "Algo para describir el producto, de tal manera que se tenga una guia de cual articulo es",
-            prices: [100, 200, 300, 400]
-        },
-        {
-            id:2,
-            name: "Producto 2",
-            image: "/prueba.jpg",
-            description: "Algo para describir el producto, de tal manera que se tenga una guia de cual articulo es",
-            prices: [100, 200, 300, 400]
-        },
-        {
-            id:3,
-            name: "Producto 3",
-            image: "/prueba.jpg",
-            description: "Algo para describir el producto, de tal manera que se tenga una guia de cual articulo es",
-            prices: [100, 200, 300, 400]
-        }
-    ]
-    const clients = [
-        {
-            id:10,
-            name: "Dra. Maribel",
-            items: 10,
-            mount: 350
-        },
-        {
-            id:11,
-            name: "Ana Navas",
-            items: 5,
-            mount: 100
-        },
-        {
-            id:12,
-            name: "Joglis",
-            items: 8,
-            mount: 180
-        }
-
-    ]
+export default function Page({ params }:{ params:{ id:string } }) {
+    const { id } = params
+    const [load, setLoad] = useState(false)
+    const [order, setOrder] = useState<TypeOrder>()
+    const [open, setOpen] = useState(false)
+    const [page, setPage] = useState(1)
+    const [products, setProducts] = useState<Array<TypeProductSelectable>>([])
 
 
+    useEffect(()=>{
+        if( id ) OrderModel.onSnap( (data:any) => setOrder(data), id)
+    },[id])
 
+    useEffect(()=>{
+        if( !order ) return
+        ProductModel.onSnap( (data:any) => {
+            setProducts( (prev:Array<any>) => {
+                return data.map( (item:any) => {
+                    const productIds = order.products.map( product => product.id )
+                    const index = prev.findIndex( prevItem => prevItem.id===item.id )
+                    return {
+                        ...item,
+                        selected: productIds.includes(item?.id) || ( index!==-1 ? prev[index]?.selected : false )
+                    }
+                })
+            } )
+        },null )
+    },[order])
 
+    useEffect(()=>{
+        (async()=>{
+            if( typeof window !== 'undefined' && products.length>0 ) {
+                if( id==="0" && !load ){
+                    const productIds = JSON.parse( window.sessionStorage.getItem('selected-product') as string )
+                    if( productIds.length>0 ) {
+                        const temp:Array<any> = []
+                        for( const product of products ) {
+                            temp.push({
+                                ...product,
+                                selected: productIds.includes(product.id) ? true : !!product?.selected
+                            })
+                        }
+                        setProducts(temp)
+                    }
+                    setLoad(true)
+                }
+            }
+        })()
+    },[products, id, load])
 
+    const handleCheckItem = (id:string) => {
+        const newProducts = products.map( item => item.id===id ? {...item, selected:!item.selected}: item)
+        setProducts( prev => newProducts )
+        handlerChangeOrder('products', newProducts.filter( product => product.selected).map( product => product as TypeProduct) )
+    }
+
+    const handlerChangeOrder = (key:string, value:any) => {
+        OrderModel.put(id, {
+            ...order,
+            [key]:value
+        })
+    }
+
+    const filterPagination = (item:any, index:number) => {
+        return Math.floor( ((index+1)/3) + ((2/3)%3) ) === page
+    }
+
+    const setStatus = (status:any) => {
+        const now = new Date()
+        const date = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`
+        handlerChangeOrder('status', [
+            ...order?.status as TypeStatus[],
+            {
+                label:status.label,
+                date
+            }
+        ])
+    }
 
 
     return <>
@@ -63,13 +99,10 @@ export default function Page() {
                 <div className="flex flex-row gap-2">
                     <label className="bg-black rounded-full flex items-center justify-center w-40 cursor-pointer" >
                         <input type="checkbox" className="peer opacity-0"/>
-                        <span className="text-white uppercase">Enviado</span>
+                        <span className="text-white uppercase">{ order?.status?.at( order?.status.length - 1 )?.label }</span>
                         <div className="absolute hidden peer-checked:block">
                             <ul className="text-black bg-white shadow-black shadow-md border border-slate-500 relative top-[90px] rounded">
-                                <li className="cursor-pointer hover:bg-slate-500 hover:text-white px-8 py-1 uppercase">Entregado</li>
-                                <li className="cursor-pointer hover:bg-slate-500 hover:text-white px-8 py-1 uppercase">En Camino</li>
-                                <li className="cursor-pointer hover:bg-slate-500 hover:text-white px-8 py-1 uppercase">Perdido</li>
-                                <li className="cursor-pointer hover:bg-slate-500 hover:text-white px-8 py-1 uppercase">Pagado</li>
+                                { ORDER_STATUS.map( status => <li key={status.value} onClick={()=>setStatus(status)} className="cursor-pointer hover:bg-slate-500 hover:text-white px-8 py-1 uppercase">{status.label}</li>)}
                             </ul>
                         </div>
                     </label>
@@ -77,111 +110,26 @@ export default function Page() {
             </div>
             <div className="p-6">
                 <div className="grid md:grid-cols-3 grid-cols-1 gap-2">
-                    <div className="grid gap-2">
-                        <label className="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-base" htmlFor="productImage">Product Image</label>
-                        <Image src="/prueba.jpg" alt="Product Image" className="h-[400px] w-[400px] aspect-square object-cover border border-gray-200 rounded-lg overflow-hidden dark:border-gray-800" width={200} height={200} />
-                        <div className="flex flex-row gap-2">
-                            <Image src="/prueba.jpg" alt="Product Image" className="h-[100px] w-[100px] aspect-square object-cover border border-gray-200 rounded-lg overflow-hidden dark:border-gray-800" width={200} height={200} />
-                            <Image src="/prueba.jpg" alt="Product Image" className="h-[100px] w-[100px] aspect-square object-cover border border-gray-200 rounded-lg overflow-hidden dark:border-gray-800" width={200} height={200} />
-                            <Image src="/prueba.jpg" alt="Product Image" className="h-[100px] w-[100px] aspect-square object-cover border border-gray-200 rounded-lg overflow-hidden dark:border-gray-800" width={200} height={200} />
-                        </div>
-                    </div>
-                    <div className="grid col-span-2 grid-rows-2">
+                    <div className="grid col-span-3 grid-rows-2">
                         <div className="w-full flex flex-row gap-2 row-span-1">
-                            <div className="w-1/2 h-full p-2 flex flex-col gap-1">
-                                <h1 className="font-bold text-2xl">Pedido 39239200</h1>
-                                <h2 className="font-medium text-lg">Detalles de Facturacion</h2>
-                                <div className="flex flex-col gap-2">
-                                    <label className="p-2 flex flex-row justify-between gap-2 border border-slate-300 rounded-md">
-                                        <span className="font-medium w-1/3">Total ($)</span>
-                                        <input type="text" value="500" disabled className="text-right w-2/3 outline-none border-none ring-0"/>
-                                    </label>
-                                </div>
-                                <h2 className="mt-4 font-medium text-lg">Detalles de Transporte</h2>
-                                <div className="flex flex-col gap-2">
-                                    <label className="p-2 flex flex-row justify-between gap-2 border border-slate-200 rounded-md">
-                                        <span className="font-medium w-1/3">Tracker</span>
-                                        <input type="text" value="OnTrac" disabled className="text-right w-2/3 outline-none border-none ring-0"/>
-                                    </label>
-                                    <label className="p-2 flex flex-row justify-between gap-2 border border-slate-200 rounded-md">
-                                        <span className="font-medium w-1/3">Tracking</span>
-                                        <input type="text" value="D1002112323233" disabled className="text-right w-2/3 outline-none border-none ring-0"/>
-                                    </label>
-                                    <label className="p-2 flex flex-row justify-between gap-2 border border-slate-300 rounded-md">
-                                        <span className="font-medium w-1/3">Zoom Tracking</span>
-                                        <input type="text" value="130545484" disabled className="text-right w-2/3 outline-none border-none ring-0"/>
-                                    </label>
-                                </div>
-                            </div>
-                            <div className="border-l w-1/2 h-full p-2">
-                                <table className="w-full mx-4">
-                                    <thead>
-                                        <tr>
-                                            <th>Cliente</th>
-                                            <th>Articulos</th>
-                                            <th>Monto en el pedido</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        { clients.map( client => <tr key={client.id}>
-                                            <td>{client.name}</td>
-                                            <td className="text-center">{client.items}</td>
-                                            <td className="text-center">{client.mount} $</td>
-                                        </tr>)}
-                                    </tbody>
-                                </table>
+                            <OrderDetails order={order as TypeOrder} onChange={handlerChangeOrder} />
+                            <ClientList products={products} />
+                        </div>
+                        <div className="border row-span-1 mt-10 flex flex-col justify-between">
+                            <TableProduct products={products.filter(product => product.selected).filter(filterPagination)} />
+                            <div className="flex flex-row justify-between items-center">
+                                <span className="w-1/2 px-5 py-1">
+                                    <Pagination items={products.filter(product => product.selected)} max={3} onPageChange={(pag:number) => setPage(pag)} page={page}/>
+                                </span>
+                                <span className="py-1">
+                                    <button type="button" onClick={()=>setOpen(true)} className="bg-black text-white py-1 px-4 rounded">Agregar Producto</button>
+                                </span>
                             </div>
                         </div>
-                        <div className="border row-span-1 mt-10">
-                            <table className="w-full">
-                                <thead>
-                                    <tr>
-                                        <th>Thumbnail</th>
-                                        <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Prices</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    { products.map( product => <tr key={product.id}>
-                                        <td>
-                                            <Image src={product.image} alt="" width={100} height={100} className="w-10 h-10 mx-auto"/>
-                                        </td>
-                                        <td>{product.name}</td>
-                                        <td width={300}>{product.description}</td>
-                                        <td className="text-center">
-                                            <select className="w-20 text-center px-2 py-1">
-                                                <optgroup label="Precio 1">
-                                                    <option>{product.prices[0]}</option>
-                                                </optgroup>
-                                                <optgroup label="Precio 2">
-                                                    <option>{product.prices[1]}</option>
-                                                </optgroup>
-                                                <optgroup label="Precio 3">
-                                                    <option>{product.prices[2]}</option>
-                                                </optgroup>
-                                                <optgroup label="Precio 4">
-                                                    <option>{product.prices[3]}</option>
-                                                </optgroup>
-                                            </select>
-                                            
-                                        </td>
-                                        <td className="text-center">
-                                            <button className="bg-black py-1 px-4 rounded-lg text-white">Ver</button>
-                                        </td>
-                                    </tr>)}
-                                </tbody>
-                            </table>
-                        </div>
-                        {/* <div className="flex flex-col gap-2 md:flex-row">
-                            <button className="inline-flex items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8">Save</button>
-                            <button className="inline-flex items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md px-8">Cancel</button>
-                        </div> */}
                     </div>
                 </div>
             </div>
         </div>
-    
+        <ModalProductSelection open={open} products={products} onClose={()=>setOpen(false)} onChangeSelect={(id:string)=>handleCheckItem(id)} />
     </>
 }
