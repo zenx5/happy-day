@@ -20,12 +20,12 @@ export default function Home() {
 
       <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
         {products.map((product) => (
-          <Link key={product.id} href={"product.href"} className="group shadow-md bg-white rounded-lg">
-            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7 border-b border-slate-300">
+          <Link key={product.id} href={"product.href"} className="group shadow-md bg-white rounded-lg flex flex-col justify-between">
+            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7 border-b border-slate-300 h-full">
               <Image
                 width={200}
                 height={200}
-                src={product.image.src}
+                src={product.image.src ? product.image.src : '/prueba.jpg'}
                 alt={product.image.alt}
                 className="h-full w-full object-cover object-center group-hover:opacity-75"
               />
@@ -33,7 +33,7 @@ export default function Home() {
             <div className="flex flex-col gap-2">
               <span className="flex flex-row justify-between items-center my-2">
                 <h3 className="mx-2 mt-1 text-lg text-gray-800">{product.name}</h3>
-                <p className="mx-2 mt-1 text-lg font-medium text-gray-500">Aprox. {product.price}</p>
+                <p className="mx-2 mt-1 text-lg font-medium text-gray-500">Aprox. {product.sellPrice}</p>
               </span>
               <button className="bg-black text-white px-5 py-2 rounded-b-lg w-full">Agregar</button>
             </div>
