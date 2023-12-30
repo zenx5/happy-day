@@ -1,15 +1,25 @@
 "use client"
 import { useEffect, useState } from "react";
 import FormSelect from "../FormSelect";
+import ClientModel from "@/tools/models/ClientModel";
 
-export default function ClientSelect() {
-    const [value, setValue] = useState<number|string>(0)
-    const [items, setItems] = useState<Array<TypeSingleOption>>([
-        { label:"Ana", value: 1 },
-        { label:"Maria", value: 2 },
-        { label:"Petra", value: 3 },
-        { label:"Maura", value: 4 }
-    ])
+export default function ClientSelect({
+    defaultValue
+}:{
+    defaultValue:string
+}) {
+    const [value, setValue] = useState(defaultValue ?? "")
+    const [items, setItems] = useState<Array<TypeSingleOption>>([])
+
+    useEffect(()=>{
+        setValue(defaultValue)
+    },[defaultValue])
+
+    useEffect(()=>{
+        ClientModel.onSnap( (data:any) => {
+            setItems( data.map( (item:TypeClient) => ({label:item.name, value:item.id})) )
+        },null)
+    },[])
 
     /*
     useEffect(()=>{
@@ -22,7 +32,7 @@ export default function ClientSelect() {
         })()
     },[items])*/
 
-    const handlerChange = (newValue:string|number) => {
+    const handlerChange = (newValue:string) => {
         setValue( newValue )
     }
 

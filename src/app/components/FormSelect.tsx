@@ -17,9 +17,8 @@ export default function FormSelect({
     onChange:Function,
     onCreate:Function
 }) {
-    const [value, setValue] = useState(currentValue ?? 0)
+    const [value, setValue] = useState<string|number>(0)
     const [newValue, setNewValue] = useState("")
-
     useEffect(()=>{
         if( value!==0 ){
             setNewValue("")
