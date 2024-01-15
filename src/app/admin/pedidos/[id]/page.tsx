@@ -5,15 +5,17 @@ import OrderModel from "@/tools/models/OrderModel"
 import ModalProductSelection from "./ModalProductSelection"
 import OrderDetails from "./OrderDetails"
 import ClientList from "./ClientList"
-import TableProduct from "./TableProduct"
+import TableProduct from "../../../components/TableProduct"
 import Pagination from "@/components/Pagination"
 import { ORDER_STATUS } from "@/tools/constants"
+import ModalPackage from "./ModalPackage"
 
 export default function Page({ params }:{ params:{ id:string } }) {
     const { id } = params
     const [load, setLoad] = useState(false)
     const [order, setOrder] = useState<TypeOrder>()
     const [open, setOpen] = useState(false)
+    const [open2, setOpen2] = useState(false)
     const [page, setPage] = useState(1)
     const [products, setProducts] = useState<Array<TypeProductSelectable>>([])
 
@@ -76,18 +78,24 @@ export default function Page({ params }:{ params:{ id:string } }) {
         return Math.floor( ((index+1)/3) + ((2/3)%3) ) === page
     }
 
-    const setStatus = (status:any) => {
-        const now = new Date()
-        const date = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`
-        handlerChangeOrder('status', [
-            ...order?.status as TypeStatus[],
-            {
-                label:status.label,
-                date
-            }
+    // const setStatus = (status:any) => {
+    //     const now = new Date()
+    //     const date = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`
+    //     handlerChangeOrder('status', [
+    //         ...order?.status as TypeStatus[],
+    //         {
+    //             label:status.label,
+    //             date
+    //         }
+    //     ])
+    // }
+
+    const handlerCreatePackage = (pack:TypePackage) => {
+        handlerChangeOrder('packages',[
+            ...order?.packages as TypePackage[],
+            pack
         ])
     }
-
 
     return <>
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm" data-v0-t="card">
@@ -96,7 +104,7 @@ export default function Page({ params }:{ params:{ id:string } }) {
                     <h3 className="text-2xl font-semibold leading-none tracking-tight">Detalles del Pedido</h3>
                     <p className="text-sm text-muted-foreground">Con esfuerzo para mi Esposa linda.</p>
                 </div>
-                <div className="flex flex-row gap-2">
+                {/* <div className="flex flex-row gap-2">
                     <label className="bg-black rounded-full flex items-center justify-center w-40 cursor-pointer" >
                         <input type="checkbox" className="peer opacity-0"/>
                         <span className="text-white uppercase">{ order?.status?.at( order?.status.length - 1 )?.label }</span>
@@ -106,7 +114,7 @@ export default function Page({ params }:{ params:{ id:string } }) {
                             </ul>
                         </div>
                     </label>
-                </div>
+                </div> */}
             </div>
             <div className="p-6">
                 <div className="grid md:grid-cols-3 grid-cols-1 gap-2">
@@ -131,5 +139,11 @@ export default function Page({ params }:{ params:{ id:string } }) {
             </div>
         </div>
         <ModalProductSelection open={open} products={products} onClose={()=>setOpen(false)} onChangeSelect={(id:string)=>handleCheckItem(id)} />
+        <ModalPackage
+            open={open2}
+            onClose={()=>setOpen2(false)}
+            products={order?.products as TypeProductSelectable[] ?? []}
+            onCreate={handlerCreatePackage}
+        />
     </>
 }
