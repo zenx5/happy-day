@@ -32,11 +32,9 @@ export const actionSave = async (
                 if( data[key]===undefined ) updateData[key] = deleteField()
                 else updateData[key] = data[key]
             }
-            updateDoc( doc(db, name, id),  updateData )
-        } else {
-            addDoc( collection(db, name), data )
+            return await updateDoc( doc(db, name, id),  updateData )
         }
-        return true
+        return await addDoc( collection(db, name), data )
     } catch( error ) {
         console.log( error )
         return false
@@ -45,10 +43,9 @@ export const actionSave = async (
 
 export const actionDelete = async (name:string, id:string) => {
     try{
-        await deleteDoc(
+        return await deleteDoc(
           doc(db, name, id)
         )
-        return true
     } catch( error ) {
         console.log( error )
         return false

@@ -18,7 +18,7 @@ export default function TableCustom({
           <table className="w-full caption-bottom text-sm">
             <thead className="[&amp;_tr]:border-b">
               <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                { headers.map( (header, index) => <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 " key={header.name+index}>{header.label}</th> )}
+                { headers.map( (header, index) => <th className="h-12 px-4 text-center align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 " key={header.name+index}>{header.label}</th> )}
               </tr>
             </thead>
             <tbody className="[&amp;_tr:last-child]:border-0">
