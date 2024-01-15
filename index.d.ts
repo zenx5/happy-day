@@ -25,7 +25,10 @@ interface TypeAttribute {
 
 interface TypeClient {
     id: string,
-    name: string
+    name: string,
+    phone: string,
+    email: string,
+    payments: Array<TypePayment>
 }
 
 interface TypeProduct {
@@ -47,23 +50,31 @@ interface TypeProduct {
     image: TypeImage
 }
 
+interface TypeCoupon {
+    code: sring,
+    value: number
+}
+
 interface TypeProductSelectable extends TypeProduct {
     selected:boolean
+}
+
+interface TypePackage {
+    id: string,
+    tracker: string,
+    tracking: string,
+    zoomTracking: string,
+    products:Array<string>,
+    status: Array<TypeStatus>
 }
 
 interface TypeOrder {
     id: string,
     code: string,
-    coupon: {
-        code: sring,
-        value: number
-    },
+    coupon: TypeCoupon,
     date: string,
     deliveryPrice: number,
-    status: Array<TypeStatus>,
-    tracker: string,
-    tracking: string,
-    zoomTracking: string,
+    packages:Array<TypePackage>,
     total: number,
     subtotal: number,
     products: Array<TypeProduct>
