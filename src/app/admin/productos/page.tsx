@@ -39,7 +39,7 @@ export default function Page() {
     }
 
     const headers = [
-        { name:'id', label:'ID', render: (id:string) => <CheckBox value onChange={()=>handleCheckItem(id)}/> },
+        { name:'id', label:'ID', render: (id:string) => <CheckBox value={selected.includes(id)} onChange={()=>handleCheckItem(id)}/> },
         { name:'image', label:'Thumbnail', render:(value:any) => <Image src={value.src.length>0 ? value.src : "/prueba.jpg"} width="64" height="64" alt={value.alt ?? "Item thumbnail"} className="aspect-square rounded-md object-cover"/> },
         { name:'name', label:'Name'},
         { name:'description', label:'Description', className:"w-[400px]" },
