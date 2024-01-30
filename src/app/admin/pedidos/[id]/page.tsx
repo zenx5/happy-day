@@ -7,7 +7,6 @@ import OrderDetails from "./OrderDetails"
 import ClientList from "./ClientList"
 import TableProduct from "../../../components/TableProduct"
 import Pagination from "@/components/Pagination"
-import { ORDER_STATUS } from "@/tools/constants"
 import ModalPackage from "./ModalPackage"
 
 export default function Page({ params }:{ params:{ id:string } }) {
@@ -29,11 +28,13 @@ export default function Page({ params }:{ params:{ id:string } }) {
         ProductModel.onSnap( (data:any) => {
             setProducts( (prev:Array<any>) => {
                 return data.map( (item:any) => {
-                    const productIds = order.products.map( product => product.id )
-                    const index = prev.findIndex( prevItem => prevItem.id===item.id )
-                    return {
-                        ...item,
-                        selected: productIds.includes(item?.id) || ( index!==-1 ? prev[index]?.selected : false )
+                    if( order?.products && order?.products.length>0 ) {
+                        const productIds = order?.products?.map( product => product.id )
+                        const index = prev.findIndex( prevItem => prevItem.id===item.id )
+                        return {
+                            ...item,
+                            selected: productIds.includes(item?.id) || ( index!==-1 ? prev[index]?.selected : false )
+                        }
                     }
                 })
             } )
@@ -124,10 +125,10 @@ export default function Page({ params }:{ params:{ id:string } }) {
                             <ClientList products={products} />
                         </div>
                         <div className="border row-span-1 mt-10 flex flex-col justify-between">
-                            <TableProduct products={products.filter(product => product.selected).filter(filterPagination)} />
+                            <TableProduct products={products.filter(product => product?.selected).filter(filterPagination)} />
                             <div className="flex flex-row justify-between items-center">
                                 <span className="w-1/2 px-5 py-1">
-                                    <Pagination items={products.filter(product => product.selected)} max={3} onPageChange={(pag:number) => setPage(pag)} page={page}/>
+                                    <Pagination items={products.filter(product => product?.selected)} max={3} onPageChange={(pag:number) => setPage(pag)} page={page}/>
                                 </span>
                                 <span className="py-1">
                                     <button type="button" onClick={()=>setOpen(true)} className="bg-black text-white py-1 px-4 rounded">Agregar Producto</button>
