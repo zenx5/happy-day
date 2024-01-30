@@ -126,7 +126,7 @@ export default function Page({ params }:{ params:{ id: string } }){
                     <ClientSelect defaultValue={product?.client?.id ?? ""} />
                     <Quantity value={product?.quantity} onChange={handlerChangeProduct} />
                     <DateIn value={product?.date} onChange={handlerChangeProduct} />
-                    <PaymentList payments={product?.payments ?? []} onAdd={handlerAddPayment}/>
+                    {/* <PaymentList payments={product?.payments ?? []} onAdd={handlerAddPayment}/> */}
                     { id==="0" && <div className="flex flex-row gap-2 justify-end h-full items-end">
                         <button type="button" onClick={handlerClean} className="border border-black text-black py-1 px-5 rounded">Limpiar</button>
                         <button type="button" onClick={handlerCreate} className="bg-black text-white py-1 px-5 rounded">Guardar</button>

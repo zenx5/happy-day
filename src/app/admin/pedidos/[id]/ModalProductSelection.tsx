@@ -1,6 +1,6 @@
 import Image from "next/image"
 import CheckBox from "@/components/CheckBox"
-import Modal from "@/app/components/Modal"
+import Modal from "@/components/Modal"
 import TableCustom from "@/components/TableCustom"
 
 export default function ModalProductSelection({

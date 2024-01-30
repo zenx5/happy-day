@@ -1,9 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function CheckBox({ value=false, onChange }:{ value:boolean, onChange:Function}) {
-    const [check, setCheck] = useState(value)
+    const [check, setCheck] = useState(false)
+
+    useEffect(()=>{
+      setCheck( prev => value )
+    },[value])
 
     const handlerChange = (event:any) => {
       setCheck(event.target.checked)

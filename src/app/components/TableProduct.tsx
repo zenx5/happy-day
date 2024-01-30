@@ -6,7 +6,6 @@ export default function TableProduct({
     products:Array<TypeProductSelectable>
 }) {
 
-
     return <table className="w-full">
         <thead>
             <tr>

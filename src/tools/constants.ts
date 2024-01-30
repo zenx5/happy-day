@@ -4,3 +4,10 @@ export const ORDER_STATUS = [
     { value:2, label: "Perdido" },
     { value:3, label: "Pagado" }
 ]
+
+export const PATH = {
+    ADMIN: {
+        CLIENTS: '/admin/clientes',
+        CLIENT: (id:string) => `/admin/clientes/${id}`
+    }
+}
